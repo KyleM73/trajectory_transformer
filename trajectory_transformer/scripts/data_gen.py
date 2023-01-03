@@ -13,7 +13,7 @@ args = parser.parse_args()
 if args.double_pendulum:
     from trajectory_transformer.envs import DoublePendulum
     env = DoublePendulum(record=True)
-    data_dir = trajectory_transformer.data.path+"/double_pendulum"
+    data_dir = trajectory_transformer.data.datapath+"/double_pendulum"
     cfg = {
         "m1" : 1,
         "l1" : 1,
