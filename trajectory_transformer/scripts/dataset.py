@@ -4,13 +4,13 @@ import torch
 from torch.utils.data import Dataset
 
 class trajectory_dataset(Dataset):
-    def __init__(self, fnames, seqlen=100, tgtlen=10):
+    def __init__(self, fnames, seqlen=100, tgtlen=10, device="cuda"):
         data = []
         for fname in fnames:
             csv = np.loadtxt(fname, delimiter=",", dtype=np.float32)
             #csv = csv.reshape((1,*data.shape))
             data.append(csv)
-        self.data = torch.from_numpy(np.stack(data,axis=0))
+        self.data = torch.from_numpy(np.stack(data,axis=0)).to(device)
         self.seqlen = seqlen
         self.tgtlen = tgtlen
         self.trials = len(fnames)

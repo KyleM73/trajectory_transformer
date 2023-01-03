@@ -6,7 +6,6 @@ def train_loop(dataloader, model, src_mask, tgt_mask, loss_fn, optimizer, device
     losses = []
     for batch, (X, y) in enumerate(dataloader):
         # Compute prediction and loss
-        X,y = X.to(device),y.to(device)
         pred = model(X, y, src_mask, tgt_mask)
         loss = loss_fn(pred, y)
 
@@ -32,7 +31,6 @@ def test_loop(dataloader, model, src_mask, tgt_mask, loss_fn, device):
 
     with torch.no_grad():
         for X, y in dataloader:
-            X,y = X.to(device),y.to(device)
             pred = model(X, y, src_mask, tgt_mask)
             test_loss += loss_fn(pred, y).item()
 

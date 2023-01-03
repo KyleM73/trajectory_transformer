@@ -1,10 +1,10 @@
-import os
+import os,glob
 from random import sample
 import datetime
 import torch
+device = "mps"
 import torch.nn as nn
 from torch.utils.data import DataLoader
-
 
 from trajectory_transformer.model import Transformer,subsequent_mask
 from trajectory_transformer.data import datapath
@@ -12,11 +12,10 @@ from trajectory_transformer.scripts import trajectory_dataset
 from trajectory_transformer.scripts import train_loop,test_loop,save_outputs
 from trajectory_transformer.log import logpath
 
-data_dir = datapath+"/double_pendulum/0102_1327"
+data_dir = datapath+"/double_pendulum"
 fnames = []
-for root, dirs, files in os.walk(data_dir):
-    for f in files:
-        fnames.append(os.path.join(root,f))
+for fname in glob.glob(data_dir+"/*/*.csv"):
+    fnames.append(fname)
 
 test_percent = 0.01
 n_files = len(fnames)
@@ -26,10 +25,10 @@ n_test = int(test_percent*n_files)
 train_files = sample(fnames,n_train)
 test_files = [f for f in fnames if f not in train_files]
 
-data_len = 10
-pred_len = 10
-train_data = trajectory_dataset(train_files,data_len,pred_len)
-test_data = trajectory_dataset(test_files,data_len,pred_len)
+data_len = 100
+pred_len = 100
+train_data = trajectory_dataset(train_files,data_len,pred_len,device)
+test_data = trajectory_dataset(test_files,data_len,pred_len,device)
 
 train_dataloader = DataLoader(train_data, batch_size=100, shuffle=True)
 test_dataloader = DataLoader(test_data, batch_size=100, shuffle=True)
@@ -42,7 +41,6 @@ d_model=512
 d_ff=2048
 heads=8
 dropout=0.1
-device = "mps"
 model = Transformer(layers, d_model, d_ff, heads, dropout).to(device)
 
 src_mask = (torch.ones(1,data_len,data_len) == 1).to(device)
